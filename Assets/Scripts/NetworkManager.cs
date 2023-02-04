@@ -20,6 +20,8 @@ public class NetworkManager : MonoBehaviour
     void Start()
     {
         buffer = new Queue<string>();
+        //NOTE: Opening a socket will cause the current process to hang
+        //When starting a networking task, start it in a new thread
         Task.Factory.StartNew(StartClient, TaskCreationOptions.LongRunning);
     }
 
