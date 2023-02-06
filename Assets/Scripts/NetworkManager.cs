@@ -12,7 +12,7 @@ public class NetworkManager : MonoBehaviour
 {
     [SerializeField] private GameObject rocket;
     private static bool game_active = true;
-    public static Queue<String> buffer;
+    public static Queue<string> buffer;
     int count = 0;
     private static readonly object _lock = new object();
 
@@ -29,8 +29,7 @@ public class NetworkManager : MonoBehaviour
     void Update()
     {
         lock(_lock){
-            String payload = "Hi " + count++;
-            buffer.Enqueue(payload);
+            buffer.Enqueue("dummy");
         }
     }
 
