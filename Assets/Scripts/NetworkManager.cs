@@ -29,7 +29,7 @@ public class NetworkManager : MonoBehaviour
     void Update()
     {
         lock(_lock){
-            buffer.Enqueue("dummy");
+            buffer.Enqueue("Hi " + count++);
         }
     }
 
