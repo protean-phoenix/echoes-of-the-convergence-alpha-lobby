@@ -12,14 +12,14 @@ public class NetworkManager : MonoBehaviour
 {
     [SerializeField] private GameObject rocket;
     private static bool game_active = true;
-    public static Queue<string> buffer;
+    public static Queue<byte[]> buffer;
     int count = 0;
     private static readonly object _lock = new object();
 
     // Start is called before the first frame update
     void Start()
     {
-        buffer = new Queue<string>();
+        buffer = new Queue<byte[]>();
         //NOTE: Opening a socket will cause the current process to hang
         //When starting a networking task, start it in a new thread
         Task.Factory.StartNew(StartClient, TaskCreationOptions.LongRunning);
@@ -28,14 +28,20 @@ public class NetworkManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        lock(_lock){
-            buffer.Enqueue("Hi " + count++);
-        }
+
     }
 
     void onApplicationQuit()
     {
         game_active = false;
+    }
+
+    public static void Enqueue(byte[] packet)
+    {
+        lock (_lock)
+        {
+            buffer.Enqueue(packet);
+        }
     }
 
     public static void StartClient()
@@ -61,20 +67,19 @@ public class NetworkManager : MonoBehaviour
                 // Connect to Remote EndPoint
                 sender.Connect(remoteEP);
 
-                Debug.Log(game_active);
-                while (game_active) { 
+                while (game_active) {
                     // Encode the data string into a byte array.
-                    String payload = "";
+                    byte[] payload = null;
                     lock (_lock)
                     {
                         if (buffer.Count > 0) { 
                             payload = buffer.Dequeue();
                         }
                     }
-                    byte[] msg = Encoding.ASCII.GetBytes(payload);
-                    Debug.Log(payload);
                     // Send the data through the socket.
-                    int bytesSent = sender.Send(msg);
+                    if(payload != null) { 
+                        int bytesSent = sender.Send(payload);
+                    }
                 }
 
                 // Release the socket.
