@@ -41,7 +41,6 @@ public class WeaponRoomScript : MonoBehaviour
         float mid_x = (target_x + origin_x) / 2;
         float mid_y = (target_y + origin_y) / 2;
 
-        //this is inverted, flip the origin and target around 
         float diff_x = origin_x - target_x;
         float diff_y = origin_y - target_y;
 
