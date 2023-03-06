@@ -58,9 +58,9 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Utils.cs" />
     <Compile Include="Assets\Scripts\NetworkManager.cs" />
-    <Compile Include="Assets\Scripts\MissileScript.cs" />
     <Compile Include="Assets\Scripts\WeaponRoomScript.cs" />
     <Compile Include="Assets\Scripts\LaserScript.cs" />
+    <Compile Include="Assets\Scripts\MissileScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
