@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NonNetRocket : MonoBehaviour
 {
-    [SerializeField] private float angle;
+    private float angle;
     [SerializeField] private float velocity;
     GameObject target;
 

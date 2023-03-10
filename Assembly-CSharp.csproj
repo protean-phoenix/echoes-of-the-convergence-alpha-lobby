@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{35B6BD53-FB7E-83E7-E805-F3090489EE2E}</ProjectGuid>
+    <ProjectGuid>{5B7B909C-5CEB-BCA6-1319-9578B6ACE15F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -56,11 +56,17 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Utils.cs" />
+    <Compile Include="Assets\Scripts\NonNetRocket.cs" />
+    <Compile Include="Assets\Scripts\RoomScripts\MissileRoomScript.cs" />
+    <Compile Include="Assets\Scripts\RoomScripts\HangarRoomScript.cs" />
     <Compile Include="Assets\Scripts\NetworkManager.cs" />
-    <Compile Include="Assets\Scripts\WeaponRoomScript.cs" />
+    <Compile Include="Assets\Scripts\InterceptorScript.cs" />
+    <Compile Include="Assets\Scripts\RoomScripts\RoomScript.cs" />
+    <Compile Include="Assets\Scripts\ShipScript.cs" />
+    <Compile Include="Assets\Scripts\RoomScripts\LaserRoomScript.cs" />
     <Compile Include="Assets\Scripts\LaserScript.cs" />
     <Compile Include="Assets\Scripts\MissileScript.cs" />
+    <Compile Include="Assets\Scripts\RoomScripts\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

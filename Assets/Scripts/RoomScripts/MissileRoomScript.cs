@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MissileRoomScript : MonoBehaviour
+public class MissileRoomScript : RoomScript
 {
     [SerializeField]
     private GameObject temp_missile_target;
@@ -32,19 +32,11 @@ public class MissileRoomScript : MonoBehaviour
     }
     public void fireWeapon(GameObject target)
     {
-        float target_x = target.gameObject.transform.position.x;
-        float target_y = target.gameObject.transform.position.y;
-
-        float origin_x = gameObject.transform.position.x;
-        float origin_y = gameObject.transform.position.y;
-
-        float diff_x = target_x - origin_x;
-        float diff_y = target_y - origin_y;
-
-        GameObject missile = GameObject.Instantiate(missile_projectile, new Vector3(origin_x, origin_y), Quaternion.identity);
-        missile.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan(diff_y / diff_x) * 180 / Mathf.PI);
+        GameObject missile = GameObject.Instantiate(missile_projectile, new Vector3(gameObject.transform.position.x, gameObject.transform.position.y), Quaternion.identity);
+        float angle_to = Utils.getAngleToInRadians(gameObject.transform.position, target.transform.position) * 180 / Mathf.PI;
+        missile.transform.eulerAngles = new Vector3(0, 0, angle_to);
         
-        missile.GetComponent<NonNetRocket>().SetAngle((Mathf.Atan(diff_y / diff_x) * 180 / Mathf.PI));
+        missile.GetComponent<NonNetRocket>().SetAngle(angle_to);
         missile.GetComponent<NonNetRocket>().SetTarget(temp_missile_target);
     }
 }
