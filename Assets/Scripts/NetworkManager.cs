@@ -7,22 +7,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Net.Http;
+using Newtonsoft.Json;
+
+public class Lobby
+{
+    public int port1 { get; set; }
+    public int port2 { get; set; }
+    public String player1 { get; set; }
+    public String player2 { get; set; }
+}
 
 public class NetworkManager : MonoBehaviour
 {
-    [SerializeField] private GameObject rocket;
     private static bool game_active = true;
-    public static Queue<byte[]> buffer;
-    int count = 0;
-    private static readonly object _lock = new object();
+    HttpClient client = new HttpClient();
+    Lobby lobby;
 
     // Start is called before the first frame update
     void Start()
     {
-        buffer = new Queue<byte[]>();
-        //NOTE: Opening a socket will cause the current process to hang
-        //When starting a networking task, start it in a new thread
-        Task.Factory.StartNew(StartClient, TaskCreationOptions.LongRunning);
+        client.BaseAddress = new Uri("http://localhost:8080");
+        getPrimedLobby();
     }
 
     // Update is called once per frame
@@ -36,75 +42,76 @@ public class NetworkManager : MonoBehaviour
         game_active = false;
     }
 
-    public static void Enqueue(byte[] packet)
+    async void getPrimedLobby()
     {
-        lock (_lock)
-        {
-            buffer.Enqueue(packet);
-        }
+        var response = await client.GetAsync("get-primed");
+        String data = await response.Content.ReadAsStringAsync();
+        Debug.Log(data);
+        lobby = JsonConvert.DeserializeObject<Lobby>(data);
+        Thread socket_thread1 = new Thread(StartServer);
+        socket_thread1.Start(lobby.port1);
+        Thread socket_thread2 = new Thread(StartServer);
+        socket_thread2.Start(lobby.port2);
     }
 
-    public static void StartClient()
+    public static void Enqueue(byte[] packet)
     {
-        byte[] bytes = new byte[1024];
+
+    }
+
+    public static void StartServer(object port_obj)
+    {
+        int port = (int)port_obj;
+     
+        // Get Host IP Address that is used to establish a connection
+        // In this case, we get one IP address of localhost that is IP : 127.0.0.1
+        // If a host has multiple addresses, you will get a list of addresses
+        IPHostEntry host = Dns.GetHostEntry("localhost");
+        IPAddress ipAddress = host.AddressList[0];
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
 
         try
         {
-            // Connect to a Remote server
-            // Get Host IP Address that is used to establish a connection
-            // In this case, we get one IP address of localhost that is IP : 127.0.0.1
-            // If a host has multiple addresses, you will get a list of addresses
-            IPAddress ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
-            IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
 
-            // Create a TCP/IP  socket.
-            Socket sender = new Socket(ipAddress.AddressFamily,
-                SocketType.Stream, ProtocolType.Tcp);
+            // Create a Socket that will use Tcp protocol
+            Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            // A Socket must be associated with an endpoint using the Bind method
+            listener.Bind(localEndPoint);
+            // Specify how many requests a Socket can listen before it gives Server busy response.
+            // We will listen 10 requests at a time
+            listener.Listen(10);
 
-            // Connect the socket to the remote endpoint. Catch any errors.
-            try
+            Debug.Log("Waiting for a connection...");
+            Socket handler = listener.Accept();
+
+            Debug.Log("Connection established!");
+
+            // Incoming data from the client.
+            string data = null;
+            byte[] bytes = null;
+
+            while (true)
             {
-                // Connect to Remote EndPoint
-                sender.Connect(remoteEP);
-
-                while (game_active) {
-                    // Encode the data string into a byte array.
-                    byte[] payload = null;
-                    lock (_lock)
-                    {
-                        if (buffer.Count > 0) { 
-                            payload = buffer.Dequeue();
-                        }
-                    }
-                    // Send the data through the socket.
-                    if(payload != null) { 
-                        int bytesSent = sender.Send(payload);
-                    }
+                bytes = new byte[1024];
+                int bytesRec = handler.Receive(bytes);
+                data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                if (data.IndexOf("<EOF>") > -1)
+                {
+                    break;
                 }
-
-                // Release the socket.
-                sender.Shutdown(SocketShutdown.Both);
-                sender.Close();
-
-            }
-            catch (ArgumentNullException ane)
-            {
-                Debug.Log("ArgumentNullException : " + ane.ToString());
-            }
-            catch (SocketException se)
-            {
-                Debug.Log("SocketException : " + se.ToString());
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Unexpected exception : " + e.ToString());
             }
 
+            byte[] msg = Encoding.ASCII.GetBytes(data);
+            handler.Send(msg);
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
         }
         catch (Exception e)
         {
             Debug.Log(e.ToString());
         }
 
+        Debug.Log("\n Press any key to continue...");
+        Console.ReadKey();
     }
 }
