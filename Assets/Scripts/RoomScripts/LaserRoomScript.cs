@@ -2,17 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LaserRoomScript : RoomScript
+public class LaserRoomScript : TargetedRoomScript
 {
-    [SerializeField]
-    private GameObject temp_target;
-
-    [SerializeField]
-    private GameObject projectile;
-
-    [SerializeField] private float reload_time = 10;
-    private float reload_timer = 0;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -23,15 +14,17 @@ public class LaserRoomScript : RoomScript
     void Update()
     {
         reload_timer += Time.deltaTime;
-        if(reload_timer >= reload_time)
+        if(reload_timer >= reload && target != null)
         {
-            fireWeapon(temp_target);
+            fireWeapon(target);
             reload_timer = 0;
         }
     }
 
     public void fireWeapon(GameObject target)
     {
-        projectile.GetComponent<LaserScript>().fireLaser(this.gameObject, target);
+        if (NetworkManager.started) { 
+            projectile.GetComponent<LaserScript>().fireLaser(this.gameObject, target);
+        }
     }
 }

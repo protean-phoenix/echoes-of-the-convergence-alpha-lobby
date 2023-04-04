@@ -25,6 +25,5 @@ public class MissileScript : MonoBehaviour
         byte[] b_comb = new byte[b_ax.Length + b_ay.Length];
         b_ax.CopyTo(b_comb, 0);
         b_ay.CopyTo(b_comb, b_ax.Length);
-        NetworkManager.Enqueue(b_comb);
     }
 }

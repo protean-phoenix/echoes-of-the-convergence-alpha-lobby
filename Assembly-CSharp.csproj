@@ -56,17 +56,18 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\NonNetRocket.cs" />
+    <Compile Include="Assets\Scripts\RoomScripts\TargetedRoomScript.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\NonNetRocket.cs" />
     <Compile Include="Assets\Scripts\RoomScripts\MissileRoomScript.cs" />
     <Compile Include="Assets\Scripts\RoomScripts\HangarRoomScript.cs" />
     <Compile Include="Assets\Scripts\NetworkManager.cs" />
-    <Compile Include="Assets\Scripts\InterceptorScript.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\InterceptorScript.cs" />
     <Compile Include="Assets\Scripts\RoomScripts\RoomScript.cs" />
     <Compile Include="Assets\Scripts\ShipScript.cs" />
     <Compile Include="Assets\Scripts\RoomScripts\LaserRoomScript.cs" />
-    <Compile Include="Assets\Scripts\LaserScript.cs" />
-    <Compile Include="Assets\Scripts\MissileScript.cs" />
-    <Compile Include="Assets\Scripts\RoomScripts\Utils.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\LaserScript.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\MissileScript.cs" />
+    <Compile Include="Assets\Scripts\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

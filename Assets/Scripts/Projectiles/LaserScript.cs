@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,13 +37,24 @@ public class LaserScript : MonoBehaviour
         float diff_x = origin_x - target_x;
         float diff_y = origin_y - target_y;
 
+        //scale is length of the laser
         float scale = Mathf.Sqrt(Mathf.Pow(diff_x, 2) + Mathf.Pow(diff_y, 2));
+        float angle = Mathf.Atan2(diff_y, diff_x) * 180 / Mathf.PI;
 
         GameObject laser = GameObject.Instantiate(this.gameObject, new Vector3(mid_x, mid_y), Quaternion.identity);
 
         laser.transform.localScale = new Vector3(scale, 1, 1);
-        laser.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan(diff_y / diff_x) * 180 / Mathf.PI);
-        
+        laser.transform.eulerAngles = new Vector3(0, 0, angle);
+
+        byte[] packet = new byte[18];
+        packet[0] = 0;
+        packet[1] = 0;
+        Array.Copy(BitConverter.GetBytes(mid_x), 0, packet, 2, 4);
+        Array.Copy(BitConverter.GetBytes(mid_y), 0, packet, 6, 4);
+        Array.Copy(BitConverter.GetBytes(scale), 0, packet, 10, 4);
+        Array.Copy(BitConverter.GetBytes(angle), 0, packet, 14, 4);
+        NetworkManager.broadcast(packet);
+
         return laser;
     }
 }
