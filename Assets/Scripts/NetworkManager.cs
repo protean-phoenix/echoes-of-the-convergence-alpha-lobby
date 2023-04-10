@@ -20,7 +20,8 @@ public class Lobby
 
 public class ThreadInitInfo
 {
-    public int port { get; set; }
+    public int port { get; set; } 
+    public String ip { get; set; }
     public int player { get; set; }
 }
 
@@ -54,18 +55,29 @@ public class NetworkManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        client.BaseAddress = new Uri("http://localhost:8080");
+        //client.BaseAddress = new Uri("http://localhost:8080"); //local testing
+        client.BaseAddress = new Uri("http://5.161.206.210:8080"); //production
         outBuffer1 = new Queue<byte[]>();
         outBuffer2 = new Queue<byte[]>();
+        inBuffer1 = new Queue<byte[]>();
+        inBuffer2 = new Queue<byte[]>();
         getPrimedLobby();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (playerSendThread1 != null && playerSendThread2 != null)
+        if (!started && playerSendThread1 != null && playerSendThread2 != null)
         {
             started = true;
+        }
+        while(inBuffer1.Count > 0)
+        {
+            processByte(inBuffer1.Dequeue(), 1);
+        }
+        while (inBuffer2.Count > 0)
+        {
+            processByte(inBuffer2.Dequeue(), 2);
         }
     }
 
@@ -84,12 +96,14 @@ public class NetworkManager : MonoBehaviour
         ThreadInitInfo info1 = new ThreadInitInfo();
         info1.port = lobby.port1;
         info1.player = 1;
+        info1.ip = lobby.player1;
         playerSocketThread1 = new Thread(StartServer);
         playerSocketThread1.Start(info1);
 
         ThreadInitInfo info2 = new ThreadInitInfo();
         info2.port = lobby.port2;
         info2.player = 2;
+        info2.ip = lobby.player2;
         playerSocketThread2 = new Thread(StartServer);
         playerSocketThread2.Start(info2);
     }
@@ -98,11 +112,8 @@ public class NetworkManager : MonoBehaviour
     {
         ThreadInitInfo info = (ThreadInitInfo)info_obj;
 
-        // Get Host IP Address that is used to establish a connection
-        // In this case, we get one IP address of localhost that is IP : 127.0.0.1
-        // If a host has multiple addresses, you will get a list of addresses
-        IPHostEntry host = Dns.GetHostEntry("localhost");
-        IPAddress ipAddress = host.AddressList[0];
+        //IPAddress ipAddress = System.Net.IPAddress.Parse("127.0.0.1"); //testing
+        IPAddress ipAddress = System.Net.IPAddress.Parse("5.161.206.210"); //production
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, info.port);
 
         try
@@ -140,6 +151,17 @@ public class NetworkManager : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log(e.ToString());
+            byte[] cmd = new byte[2];
+            cmd[0] = 255;
+            cmd[1] = 0;
+            if (info.player == 1)
+            {
+                inBuffer1.Enqueue(cmd);
+            }
+            else if (info.player == 2)
+            {
+                inBuffer2.Enqueue(cmd);
+            }
         }
 
         Debug.Log("\n Press any key to continue...");
@@ -177,6 +199,17 @@ public class NetworkManager : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log(e.ToString());
+            byte[] cmd = new byte[2];
+            cmd[0] = 255;
+            cmd[1] = 0;
+            if (player == 1)
+            {
+                inBuffer1.Enqueue(cmd);
+            }
+            else if (player == 2)
+            {
+                inBuffer2.Enqueue(cmd);
+            }
         }
 
     }
@@ -195,5 +228,20 @@ public class NetworkManager : MonoBehaviour
     {
         sendPlayer1(msg);
         sendPlayer2(msg);
+    }
+
+    static void processByte(byte[] input, int player)
+    {
+        switch (input[0]) //first byte
+        {
+            case 255: //case 255: system commands
+                switch (input[1]) //second byte
+                {
+                    case 0://case 0: shutdown
+                        Application.Quit();
+                        break;
+                }
+                break;
+        }
     }
 }
