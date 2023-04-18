@@ -1,9 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+public enum TestingStatus
+{
+    TEST,
+    PROD
+}
 
 public class Utils : MonoBehaviour
 {
+    public static TestingStatus status = TestingStatus.PROD;
+    
     public static float getDistanceTo(Vector3 origin, Vector3 dest)
     {
         float target_x = dest.x;

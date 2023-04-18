@@ -1,11 +1,8 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Http;
 using Newtonsoft.Json;
@@ -55,8 +52,14 @@ public class NetworkManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //client.BaseAddress = new Uri("http://localhost:8080"); //local testing
-        client.BaseAddress = new Uri("http://5.161.206.210:8080"); //production
+        if (Utils.status == TestingStatus.TEST) {
+            // !!! LOCAL TESTING !!!
+            client.BaseAddress = new Uri("http://localhost:8080");
+        } else if (Utils.status == TestingStatus.PROD) {
+            // !!! PRODUCTION !!!
+            client.BaseAddress = new Uri("http://5.161.206.210:8080");
+        }
+           
         outBuffer1 = new Queue<byte[]>();
         outBuffer2 = new Queue<byte[]>();
         inBuffer1 = new Queue<byte[]>();
@@ -95,14 +98,14 @@ public class NetworkManager : MonoBehaviour
 
         ThreadInitInfo info1 = new ThreadInitInfo();
         info1.port = lobby.port1;
-        info1.player = 1;
+        info1.player = 0;
         info1.ip = lobby.player1;
         playerSocketThread1 = new Thread(StartServer);
         playerSocketThread1.Start(info1);
 
         ThreadInitInfo info2 = new ThreadInitInfo();
         info2.port = lobby.port2;
-        info2.player = 2;
+        info2.player = 1;
         info2.ip = lobby.player2;
         playerSocketThread2 = new Thread(StartServer);
         playerSocketThread2.Start(info2);
@@ -112,8 +115,17 @@ public class NetworkManager : MonoBehaviour
     {
         ThreadInitInfo info = (ThreadInitInfo)info_obj;
 
-        //IPAddress ipAddress = System.Net.IPAddress.Parse("127.0.0.1"); //testing
-        IPAddress ipAddress = System.Net.IPAddress.Parse("5.161.206.210"); //production
+        IPAddress ipAddress = null;
+
+        if (Utils.status == TestingStatus.TEST) {
+            // !!! LOCAL TESTING !!!
+            IPHostEntry host = Dns.GetHostEntry("localhost");
+            ipAddress = host.AddressList[0];
+        }else if(Utils.status == TestingStatus.PROD) {  
+            // !!! PRODUCTION !!!
+            ipAddress = System.Net.IPAddress.Parse("5.161.206.210"); 
+        }
+
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, info.port);
 
         try
@@ -132,20 +144,24 @@ public class NetworkManager : MonoBehaviour
 
             Debug.Log("Connection established!");
 
-            if (info.player == 1)
+            if (info.player == 0)
+            {
+                SocketInfo s_info = new SocketInfo();
+                s_info.socket = handler;
+                s_info.player = 0;
+                playerSendThread1 = new Thread(SendThread);
+                playerSendThread1.Start(s_info);
+                playerReceiveThread1 = new Thread(ReceiveThread);
+                playerReceiveThread1.Start(s_info);
+            }else if(info.player == 1)
             {
                 SocketInfo s_info = new SocketInfo();
                 s_info.socket = handler;
                 s_info.player = 1;
-                playerSendThread1 = new Thread(SendThread);
-                playerSendThread1.Start(s_info);
-            }else if(info.player == 2)
-            {
-                SocketInfo s_info = new SocketInfo();
-                s_info.socket = handler;
-                s_info.player = 2;
                 playerSendThread2 = new Thread(SendThread);
                 playerSendThread2.Start(s_info);
+                playerReceiveThread2 = new Thread(ReceiveThread);
+                playerReceiveThread2.Start(s_info);
             }
         }
         catch (Exception e)
@@ -154,11 +170,11 @@ public class NetworkManager : MonoBehaviour
             byte[] cmd = new byte[2];
             cmd[0] = 255;
             cmd[1] = 0;
-            if (info.player == 1)
+            if (info.player == 0)
             {
                 inBuffer1.Enqueue(cmd);
             }
-            else if (info.player == 2)
+            else if (info.player == 1)
             {
                 inBuffer2.Enqueue(cmd);
             }
@@ -177,14 +193,14 @@ public class NetworkManager : MonoBehaviour
         {
             while (game_active)
             {
-                if(player == 1)
+                if(player == 0)
                 {
                     while(outBuffer1.Count > 0)
                     {
                         handler.Send(outBuffer1.Dequeue());
                     }
                 }
-                else if (player == 2)
+                else if (player == 1)
                 {
                     while (outBuffer2.Count > 0)
                     {
@@ -199,19 +215,19 @@ public class NetworkManager : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log(e.ToString());
+            //send command to shut down the lobby
             byte[] cmd = new byte[2];
             cmd[0] = 255;
             cmd[1] = 0;
-            if (player == 1)
+            if (player == 0)
             {
                 inBuffer1.Enqueue(cmd);
             }
-            else if (player == 2)
+            else if (player == 1)
             {
                 inBuffer2.Enqueue(cmd);
             }
         }
-
     }
 
     public static void sendPlayer1(byte[] msg)
@@ -230,14 +246,73 @@ public class NetworkManager : MonoBehaviour
         sendPlayer2(msg);
     }
 
+    public static void ReceiveThread(object info)
+    {
+        SocketInfo s_info = (SocketInfo)info;
+        Socket socket = s_info.socket;
+        int player = s_info.player;
+        try
+        {
+            while (game_active)
+            {
+                byte[] bytes = new byte[1024];
+                int bytesRec = socket.Receive(bytes);
+                if (bytesRec > 0)
+                {
+                    byte[] msg = new byte[bytesRec];
+                    Array.Copy(bytes, 0, msg, 0, bytesRec);
+                    if (player == 0)
+                    {
+                        inBuffer1.Enqueue(msg);
+                    }
+                    else if (player == 1)
+                    {
+                        inBuffer2.Enqueue(msg);
+                    }
+                    Debug.Log(BitConverter.ToString(msg));
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.ToString());
+            //send command to shut down the lobby
+            byte[] cmd = new byte[2];
+            cmd[0] = 255;
+            cmd[1] = 0;
+            if (player == 0)
+            {
+                inBuffer1.Enqueue(cmd);
+            }
+            else if (player == 1)
+            {
+                inBuffer2.Enqueue(cmd);
+            }
+        }
+    }
+
     static void processByte(byte[] input, int player)
     {
         switch (input[0]) //first byte
         {
-            case 255: //case 255: system commands
+            case 0: //basic requests
+                switch (input[1])
+                { //second byte
+                    case 0: //retarget
+                        GameObject origin_ship_obj = ShipScript.getShipById((int)input[2]);
+                        GameObject origin_room_obj = origin_ship_obj.GetComponent<ShipScript>().getRoomById(input[3]);
+                        GameObject target_ship_obj = ShipScript.getShipById((int)input[4]);
+                        GameObject target_room_obj = target_ship_obj.GetComponent<ShipScript>().getRoomById(input[5]);
+                        WeaponRoomScript origin_room = origin_room_obj.GetComponent<WeaponRoomScript>();
+                        origin_room.SetTarget(target_room_obj);
+
+                        break;
+                } 
+                break;
+            case 255: //system commands
                 switch (input[1]) //second byte
                 {
-                    case 0://case 0: shutdown
+                    case 0://shutdown
                         Application.Quit();
                         break;
                 }

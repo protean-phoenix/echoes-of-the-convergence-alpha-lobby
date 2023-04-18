@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MissileRoomScript : TargetedRoomScript
+public class MissileRoomScript : WeaponRoomScript
 { 
     // Start is called before the first frame update
     void Start()
     {
-        
+        owningShip.GetComponent<ShipScript>().addRoomToShip(this.gameObject);
     }
 
     // Update is called once per frame
@@ -16,7 +16,7 @@ public class MissileRoomScript : TargetedRoomScript
         reload_timer += Time.deltaTime;
         if(reload_timer >= reload && target != null)
         {
-            fireWeapon(target);
+            //fireWeapon(target);
             reload_timer = 0;
         }
         

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetedRoomScript : RoomScript
+public class WeaponRoomScript : RoomScript
 {
     [SerializeField] protected GameObject target;
     [SerializeField] protected GameObject projectile;
@@ -18,5 +18,10 @@ public class TargetedRoomScript : RoomScript
     void Update()
     {
         
+    }
+
+    public void SetTarget(GameObject target)
+    {
+        this.target = target;
     }
 }

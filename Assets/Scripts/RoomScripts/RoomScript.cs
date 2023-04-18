@@ -5,6 +5,7 @@ using UnityEngine;
 public class RoomScript : MonoBehaviour
 {
     [SerializeField] protected GameObject owningShip;
+    [SerializeField] protected int id;
 
     // Start is called before the first frame update
     void Start()
@@ -16,5 +17,10 @@ public class RoomScript : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public int getId()
+    {
+        return id;
     }
 }
