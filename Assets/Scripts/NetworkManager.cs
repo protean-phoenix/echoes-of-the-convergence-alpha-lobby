@@ -55,6 +55,7 @@ public class NetworkManager : MonoBehaviour
         if (Utils.status == TestingStatus.TEST) {
             // !!! LOCAL TESTING !!!
             client.BaseAddress = new Uri("http://localhost:8080");
+            started = true;
         } else if (Utils.status == TestingStatus.PROD) {
             // !!! PRODUCTION !!!
             client.BaseAddress = new Uri("http://5.161.206.210:8080");

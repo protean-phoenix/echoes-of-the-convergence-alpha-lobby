@@ -8,6 +8,8 @@ public class MissileRoomScript : WeaponRoomScript
     void Start()
     {
         owningShip.GetComponent<ShipScript>().addRoomToShip(this.gameObject);
+        room_health_display = new GameObject[max_hp];
+        RenderHealthBars();
     }
 
     // Update is called once per frame

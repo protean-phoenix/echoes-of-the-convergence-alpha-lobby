@@ -3,7 +3,9 @@ guid: 4f55f36cef867a6498da4b0eafd3aae2
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - owningShip: {instanceID: 0}
+  - room_health_bar: {fileID: 5644808245149602832, guid: 15e3cb5a0df4d3f428a1b94dce80e183, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

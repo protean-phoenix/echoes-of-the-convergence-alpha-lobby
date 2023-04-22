@@ -9,7 +9,7 @@ public enum TestingStatus
 
 public class Utils : MonoBehaviour
 {
-    public static TestingStatus status = TestingStatus.PROD;
+    public static TestingStatus status = TestingStatus.TEST;
     
     public static float getDistanceTo(Vector3 origin, Vector3 dest)
     {

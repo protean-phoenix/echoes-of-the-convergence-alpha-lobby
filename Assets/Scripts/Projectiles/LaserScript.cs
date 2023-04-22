@@ -28,6 +28,29 @@ public class LaserScript : MonoBehaviour
         float target_x = target.gameObject.transform.position.x;
         float target_y = target.gameObject.transform.position.y;
 
+        int shieldLayer = 0;
+        if(origin.GetComponent<LaserRoomScript>().getOwningShip().GetComponent<ShipScript>().getId() == 0)
+        {
+            shieldLayer = 7;
+        }else if (origin.GetComponent<LaserRoomScript>().getOwningShip().GetComponent<ShipScript>().getId() == 1)
+        {
+            shieldLayer = 6;
+        }
+
+            RaycastHit2D hit = Physics2D.Raycast(origin.transform.position, ((Vector2)(target.transform.position - origin.transform.position)).normalized, Mathf.Infinity, 1 << shieldLayer);
+        if (hit.collider != null) //this means that an enemy shield was detected in the path of the laser
+        {
+            target_x = hit.point.x;
+            target_y = hit.point.y;
+            //Enemy Ship takes shield damage
+            target.GetComponent<RoomScript>().getOwningShip().GetComponent<ShipScript>().TakeShieldDamage(origin.GetComponent<LaserRoomScript>().getShlDamage());
+        }
+        else
+        {
+            //Room takes system damage
+            target.GetComponent<RoomScript>().TakeDamage(origin.GetComponent<LaserRoomScript>().getSysDamage());
+        }
+
         float origin_x = origin.transform.position.x;
         float origin_y = origin.transform.position.y;
 
@@ -45,6 +68,8 @@ public class LaserScript : MonoBehaviour
 
         laser.transform.localScale = new Vector3(scale, 1, 1);
         laser.transform.eulerAngles = new Vector3(0, 0, angle);
+
+        
 
         byte[] packet = new byte[18];
         packet[0] = 0;

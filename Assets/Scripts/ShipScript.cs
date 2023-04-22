@@ -4,8 +4,18 @@ using UnityEngine;
 public class ShipScript : MonoBehaviour
 {
     [SerializeField] private int id;
-    [SerializeField] private float height;
-    [SerializeField] private float width;
+    [SerializeField] private float flight_height;
+    [SerializeField] private float flight_width;
+    [SerializeField] private float shield_height;
+    [SerializeField] private float shield_width;
+    [SerializeField] private GameObject shield_prefab;
+    private GameObject ship_shield;
+    [SerializeField] private int max_hp;
+    private float hp;
+    [SerializeField] private GameObject health_bar;
+    [SerializeField] private int max_shield;
+    private float shield_hp;
+    [SerializeField] private GameObject shield_bar;
 
     private static GameObject[] ship_list;
     private GameObject[] room_list;
@@ -13,12 +23,27 @@ public class ShipScript : MonoBehaviour
     void Start()
     {
         registerSelf();
+        hp = max_hp;
+        health_bar.GetComponent<StatBarScript>().renderBar(max_hp);
+        shield_hp = max_shield;
+        shield_bar.GetComponent<StatBarScript>().renderBar(max_shield);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(shield_hp > 0 && ship_shield == null)
+        {
+            ship_shield = GameObject.Instantiate(shield_prefab, gameObject.transform);
+            ship_shield.transform.localScale = new Vector2(shield_width, shield_height);
+            if(id == 1)//if this is player 2, switch the layer of the shield to player2shield
+            {
+                ship_shield.layer = 7;
+            }
+        }else if(shield_hp <= 0 && ship_shield != null)
+        {
+            GameObject.Destroy(ship_shield);
+        }
     }
 
     public void registerSelf()
@@ -52,6 +77,23 @@ public class ShipScript : MonoBehaviour
         room_list[local_id] = room;
     }
 
+    public void TakeHullDamage(float damage)
+    {
+        hp -= MathF.Abs(damage);
+        health_bar.GetComponent<StatBarScript>().adjustBar(-Mathf.Abs(damage));
+    }
+    
+    public void TakeShieldDamage(float damage)
+    {
+        shield_hp -= MathF.Abs(damage);
+        shield_bar.GetComponent<StatBarScript>().adjustBar(-Mathf.Abs(damage));
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
     public static GameObject getShipById(int id)
     {
         return ship_list[id];
@@ -62,13 +104,13 @@ public class ShipScript : MonoBehaviour
         return room_list[id];
     }
 
-    public float getHeight()
+    public float getFlightHeight()
     {
-        return height;
+        return flight_height;
     }
 
-    public float getWidth()
+    public float getFlightWidth()
     {
-        return width;
+        return flight_width;
     }
 }

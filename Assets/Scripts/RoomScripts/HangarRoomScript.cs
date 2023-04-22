@@ -7,7 +7,7 @@ public class HangarRoomScript : WeaponRoomScript
     // Start is called before the first frame update
     void Start()
     {
-        owningShip.GetComponent<ShipScript>().addRoomToShip(this.gameObject);
+        initRoom();
     }
 
     // Update is called once per frame

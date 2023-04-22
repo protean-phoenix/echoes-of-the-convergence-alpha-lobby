@@ -26,7 +26,7 @@ public class InterceptorScript : MonoBehaviour
     void Start()
     {
         status = FlightStatus.on_approach;
-        float start_y = target_ship.transform.position.y + target_ship.GetComponent<ShipScript>().getHeight();
+        float start_y = target_ship.transform.position.y + target_ship.GetComponent<ShipScript>().getFlightHeight();
         start_pos = new Vector3(target_ship.transform.position.x, start_y);
 
         angle = Utils.getAngleToInRadians(gameObject.transform.position, start_pos);
@@ -50,8 +50,8 @@ public class InterceptorScript : MonoBehaviour
         {
             flight_timer += Time.deltaTime;
             float factor = flight_timer * speed * Mathf.PI * 2 / perim;
-            float x_pos = target_ship.GetComponent<ShipScript>().getWidth() * Mathf.Sin(factor) + target_ship.transform.position.x;
-            float y_pos = target_ship.GetComponent<ShipScript>().getHeight() * Mathf.Cos(factor) + target_ship.transform.position.y;
+            float x_pos = target_ship.GetComponent<ShipScript>().getFlightWidth() * Mathf.Sin(factor) + target_ship.transform.position.x;
+            float y_pos = target_ship.GetComponent<ShipScript>().getFlightHeight() * Mathf.Cos(factor) + target_ship.transform.position.y;
             gameObject.transform.position = new Vector3(x_pos, y_pos);
 
             float angle_to = Utils.getAngleToInRadians(gameObject.transform.position, target_ship.transform.position) * 180 / Mathf.PI;

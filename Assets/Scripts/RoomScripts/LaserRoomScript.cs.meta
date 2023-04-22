@@ -4,7 +4,9 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - temp_target: {instanceID: 0}
+  - owningShip: {instanceID: 0}
+  - room_health_bar: {fileID: 5644808245149602832, guid: 15e3cb5a0df4d3f428a1b94dce80e183, type: 3}
+  - target: {instanceID: 0}
   - projectile: {fileID: 6120766951965810201, guid: 06877048e89001549a769f7dda6f0411, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
