@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2759117036655518461}
   - component: {fileID: 1281133582307618723}
+  - component: {fileID: -6619938634158067839}
   m_Layer: 0
   m_Name: Interceptor
   m_TagString: Untagged
@@ -72,7 +73,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 4
   m_Sprite: {fileID: 21300000, guid: 8350a6a65492d294db2b0b8d89296722, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -84,3 +85,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-6619938634158067839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7277630377636881491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e738cb34013f7cd43899c0cbaee39b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  reload_time: 6
+  projectile: {fileID: 6120766951965810201, guid: 06877048e89001549a769f7dda6f0411, type: 3}
+  sys_damage: 1
+  shl_damage: 1

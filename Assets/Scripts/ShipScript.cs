@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ShipScript : MonoBehaviour
@@ -19,6 +20,8 @@ public class ShipScript : MonoBehaviour
 
     private static GameObject[] ship_list;
     private GameObject[] room_list;
+    private List<GameObject> missiles_inflight;
+    private List<GameObject> craft_inflight;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +30,8 @@ public class ShipScript : MonoBehaviour
         health_bar.GetComponent<StatBarScript>().renderBar(max_hp);
         shield_hp = max_shield;
         shield_bar.GetComponent<StatBarScript>().renderBar(max_shield);
+        missiles_inflight = new List<GameObject>();
+        craft_inflight = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -77,6 +82,35 @@ public class ShipScript : MonoBehaviour
         room_list[local_id] = room;
     }
 
+    public void registerCraft(GameObject craft) {
+        craft_inflight.Add(craft);
+    }
+
+    public void registerMissile(GameObject missile)
+    {
+        missiles_inflight.Add(missile);
+    }
+
+    public void deregisterCraft(GameObject craft)
+    {
+        craft_inflight.Remove(craft);
+    }
+
+    public void deregisterMissile(GameObject missile)
+    {
+        missiles_inflight.Remove(missile);
+    }
+
+    public List<GameObject> getMissileList()
+    {
+        return missiles_inflight;
+    }
+
+    public List<GameObject> getCraftList()
+    {
+        return craft_inflight;
+    }
+
     public void TakeHullDamage(float damage)
     {
         hp -= MathF.Abs(damage);
@@ -97,6 +131,19 @@ public class ShipScript : MonoBehaviour
     public static GameObject getShipById(int id)
     {
         return ship_list[id];
+    }
+
+    public static GameObject getEnemyShip(GameObject ship)
+    {
+        int id = ship.GetComponent<ShipScript>().getId();
+        if(id == 0)
+        {
+            return ship_list[1];
+        }else if (id == 1)
+        {
+            return ship_list[0];
+        }
+        return null;
     }
 
     public GameObject getRoomById(int id)

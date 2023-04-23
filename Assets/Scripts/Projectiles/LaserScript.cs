@@ -28,27 +28,52 @@ public class LaserScript : MonoBehaviour
         float target_x = target.gameObject.transform.position.x;
         float target_y = target.gameObject.transform.position.y;
 
+        //get the shield layer so that the laser only collides with the shields of the enemy ship
         int shieldLayer = 0;
-        if(origin.GetComponent<LaserRoomScript>().getOwningShip().GetComponent<ShipScript>().getId() == 0)
+        GameObject host_ship = null;
+        if(origin.GetComponent<LaserRoomScript>() != null) {
+            host_ship = origin.GetComponent<LaserRoomScript>().getOwningShip();
+        }else if(origin.GetComponent<CraftScript>() != null)
+        {
+            host_ship = origin.GetComponent<CraftScript>().getParentShip();
+        }
+
+        if (host_ship.GetComponent<ShipScript>().getId() == 0)
         {
             shieldLayer = 7;
-        }else if (origin.GetComponent<LaserRoomScript>().getOwningShip().GetComponent<ShipScript>().getId() == 1)
+        }
+        else if (host_ship.GetComponent<ShipScript>().getId() == 1)
         {
             shieldLayer = 6;
         }
 
-            RaycastHit2D hit = Physics2D.Raycast(origin.transform.position, ((Vector2)(target.transform.position - origin.transform.position)).normalized, Mathf.Infinity, 1 << shieldLayer);
+        //get the shield and system damage of this particular laser
+        float shl_dmg = 0f;
+        float sys_dmg = 0f;
+        if (origin.GetComponent<LaserRoomScript>() != null)
+        {
+            shl_dmg = origin.GetComponent<LaserRoomScript>().getShlDamage();
+            sys_dmg = origin.GetComponent<LaserRoomScript>().getSysDamage();
+        }
+        else if (origin.GetComponent<CraftScript>() != null)
+        {
+            shl_dmg = origin.GetComponent<CraftScript>().getShlDamage();
+            sys_dmg = origin.GetComponent<CraftScript>().getSysDamage();
+        }
+
+        //determine if there's a shield in the way of the laser
+        RaycastHit2D hit = Physics2D.Raycast(origin.transform.position, ((Vector2)(target.transform.position - origin.transform.position)).normalized, Mathf.Infinity, 1 << shieldLayer);
         if (hit.collider != null) //this means that an enemy shield was detected in the path of the laser
         {
             target_x = hit.point.x;
             target_y = hit.point.y;
             //Enemy Ship takes shield damage
-            target.GetComponent<RoomScript>().getOwningShip().GetComponent<ShipScript>().TakeShieldDamage(origin.GetComponent<LaserRoomScript>().getShlDamage());
+            target.GetComponent<RoomScript>().getOwningShip().GetComponent<ShipScript>().TakeShieldDamage(shl_dmg);
         }
         else
         {
             //Room takes system damage
-            target.GetComponent<RoomScript>().TakeDamage(origin.GetComponent<LaserRoomScript>().getSysDamage());
+            target.GetComponent<RoomScript>().TakeDamage(sys_dmg);
         }
 
         float origin_x = origin.transform.position.x;

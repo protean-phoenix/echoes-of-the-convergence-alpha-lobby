@@ -11,17 +11,22 @@ public class WeaponRoomScript : RoomScript
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void SetTarget(GameObject target)
     {
         this.target = target;
+    }
+
+    public GameObject getTarget()
+    {
+        return target;
     }
 }
