@@ -17,6 +17,7 @@ public class ShipScript : MonoBehaviour
     [SerializeField] private int max_shield;
     private float shield_hp;
     [SerializeField] private GameObject shield_bar;
+    private float dodge;
 
     private static GameObject[] ship_list;
     private GameObject[] room_list;
@@ -109,6 +110,31 @@ public class ShipScript : MonoBehaviour
     public List<GameObject> getCraftList()
     {
         return craft_inflight;
+    }
+
+    public void recalculateDodge()
+    {
+        dodge = 0;
+        foreach(GameObject room in room_list)
+        {
+            if(room != null && room.GetComponent<EngineScript>() != null)
+            {
+                dodge += (1 - dodge) * room.GetComponent<EngineScript>().getDodge();
+            }
+        }
+    }
+
+    public bool rollDodge()
+    {
+        float roll = (float)(new System.Random().NextDouble());
+        if (roll <= dodge)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void TakeHullDamage(float damage)

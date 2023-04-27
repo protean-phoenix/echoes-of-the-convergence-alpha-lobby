@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,8 @@ public enum FlightStatus
 public class CraftScript : MonoBehaviour
 {
     [SerializeField] protected float speed;
+    protected int id;
+    protected static int count = 0;
     protected float angle;
     protected GameObject target_ship;
     protected GameObject host_room;
@@ -40,6 +43,9 @@ public class CraftScript : MonoBehaviour
 
     public void initCraft(GameObject ship, GameObject room)
     {
+        id = count;
+        count++;
+
         source_ship = ship;
         source_ship.GetComponent<ShipScript>().registerCraft(this.gameObject);
 
@@ -53,6 +59,19 @@ public class CraftScript : MonoBehaviour
         gameObject.transform.eulerAngles = new Vector3(0, 0, angle * 180 / Mathf.PI);
 
         perim = Utils.getEllipsePerimeter(target_ship.transform.position.x, target_ship.transform.position.y);
+
+        byte[] packet = new byte[12];
+        packet[0] = 0;
+        packet[1] = 2;
+        packet[2] = (byte)id;
+        packet[3] = (byte)target_ship.GetComponent<ShipScript>().getId();
+        float x = gameObject.transform.position.x;
+        float y = gameObject.transform.position.y;
+        byte[] b_ox = BitConverter.GetBytes(x);
+        byte[] b_oy = BitConverter.GetBytes(y);
+        b_ox.CopyTo(packet, 4);
+        b_oy.CopyTo(packet, 8);
+        NetworkManager.broadcast(packet);
     }
 
     public void destroy() {

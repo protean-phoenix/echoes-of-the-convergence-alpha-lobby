@@ -270,7 +270,6 @@ public class NetworkManager : MonoBehaviour
                     {
                         inBuffer2.Enqueue(msg);
                     }
-                    Debug.Log(BitConverter.ToString(msg));
                 }
             }
         }

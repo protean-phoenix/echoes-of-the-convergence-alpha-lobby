@@ -2,14 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EffectsManagerScript : MonoBehaviour
+public class ShieldScript : RoomScript
 {
-    public GameObject[] effects;
-
     // Start is called before the first frame update
     void Start()
     {
-        
+        initRoom();
     }
 
     // Update is called once per frame
