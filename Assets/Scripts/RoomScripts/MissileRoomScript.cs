@@ -13,7 +13,7 @@ public class MissileRoomScript : WeaponRoomScript
     // Update is called once per frame
     void Update()
     {
-        reload_timer += Time.deltaTime;
+        reload_timer += Time.deltaTime * assigned_power / max_hp;
         if(reload_timer >= reload && target != null)
         {
             fireWeapon(target);

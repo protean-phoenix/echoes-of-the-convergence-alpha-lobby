@@ -13,7 +13,7 @@ public class HangarRoomScript : WeaponRoomScript
     // Update is called once per frame
     void Update()
     {
-        reload_timer += (Time.deltaTime * hp / max_hp);
+        reload_timer += Time.deltaTime * assigned_power / max_hp;
         if (reload_timer >= reload && target != null)
         {
             reload_timer = 0;

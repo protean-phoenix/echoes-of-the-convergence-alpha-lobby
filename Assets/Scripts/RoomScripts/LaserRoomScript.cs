@@ -4,18 +4,35 @@ using UnityEngine;
 
 public class LaserRoomScript : WeaponRoomScript
 {
-    [SerializeField] private float sys_damage; //damage this laser room does to rooms
-    [SerializeField] private float shl_damage; //damage this laser room does to shields
-    // Start is called before the first frame update
+    //
+    //  Damage this laser does
+    //  to other (enemy) rooms.
+    //
+    [SerializeField] private float  sys_damage;
+
+    //
+    //  Damage this laser does
+    //  to (enemy) shields.
+    //
+    [SerializeField] private float  shl_damage;
+
+    //
+    //  Start is called before
+    //  the first frame update.
+    //
     void Start()
     {
         initRoom();
     }
 
-    // Update is called once per frame
+    //
+    //  Update is called
+    //  once per frame.
+    //
     void Update()
     {
-        reload_timer += (Time.deltaTime * hp / max_hp);
+        reload_timer += (Time.deltaTime * (assigned_power / max_hp));
+
         if(reload_timer >= reload && target != null)
         {
             reload_timer = 0;
@@ -25,9 +42,10 @@ public class LaserRoomScript : WeaponRoomScript
 
     public void fireWeapon(GameObject target)
     {
-        if (NetworkManager.started) { 
-            projectile.GetComponent<LaserScript>().fireLaser(gameObject, target);
-        }
+        if (NetworkManager.started) 
+            projectile
+                .GetComponent<LaserScript>()
+                .fireLaser(gameObject, target);
     }
 
     public float getSysDamage()
