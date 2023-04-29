@@ -24,6 +24,7 @@ public class ShipScript : MonoBehaviour
 
     [SerializeField] private int        accumulative_power;
 
+    private GameObject[]                crew_list;
     private static GameObject[]         ship_list;
     private GameObject[]                room_list;
     private List<GameObject>            missiles_inflight;
@@ -122,6 +123,25 @@ public class ShipScript : MonoBehaviour
         ship_list[id] = gameObject;
     }
 
+    public void addMemberToShip(GameObject crewMember)
+    {
+        int local_id = crewMember.GetComponent<CrewMemberScript>().getId();
+
+        if (crew_list == null)
+            crew_list = new GameObject[1];
+
+        if (crew_list.Length <= local_id)
+        {
+            GameObject[] extended_list = new GameObject[local_id + 1];
+
+            Array.Copy(crew_list, extended_list, crew_list.Length);
+
+            crew_list = extended_list;
+        }
+
+        crew_list[local_id] = crewMember;
+    }
+
     public void addRoomToShip(GameObject room)
     {
         int local_id = room.GetComponent<RoomScript>().getId();
@@ -207,7 +227,7 @@ public class ShipScript : MonoBehaviour
 
             reactors.Add(room);
 
-            accumulative_power += room.GetComponent<ReactorRoomScript>().getCapacity() * 2;
+            accumulative_power += room.GetComponent<ReactorRoomScript>().getCapacity();
         }
 
         else if (room.GetComponent<PointDefenseScript>() != null)
@@ -313,6 +333,16 @@ public class ShipScript : MonoBehaviour
         return null;
     }
 
+    public GameObject[] getCrewList()
+    {
+        return crew_list;
+    }
+
+    public GameObject getCrewMemberById(int id)
+    {
+        return crew_list[id];
+    }
+
     public GameObject[] getRoomList()
     {
         return room_list;
@@ -331,5 +361,40 @@ public class ShipScript : MonoBehaviour
     public float getFlightWidth()
     {
         return flight_width;
+    }
+    
+    public List<GameObject> getLasersList()
+    {
+        return lasers;
+    }
+
+    public List<GameObject> getReactorsList()
+    {
+        return reactors;
+    }
+
+    public List<GameObject> getHangarsList()
+    {
+        return hangars;
+    }
+
+    public List<GameObject> getMissilesList()
+    {
+        return missiles;
+    }
+
+    public List<GameObject> getEnginesList()
+    {
+        return engines;
+    }
+
+    public List<GameObject> getPointDefensesList()
+    {
+        return point_defenses;
+    }
+
+    public List<GameObject> geShieldsList()
+    {
+        return shields;
     }
 }
