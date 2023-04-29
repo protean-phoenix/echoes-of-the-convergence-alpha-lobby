@@ -20,9 +20,9 @@ public class ReactorRoomScript : RoomScript
     //
     void Start()
     {
-        initRoom();
+        capacity = max_hp * 2;
 
-        capacity = max_hp;
+        initRoom();
     }
 
     //
@@ -37,7 +37,7 @@ public class ReactorRoomScript : RoomScript
         //  of generated power also decreases.
         //
         if (hp < capacity)
-            capacity = Mathf.FloorToInt(hp);
+            capacity = Mathf.FloorToInt(hp) * 2;
     }
 
     //
