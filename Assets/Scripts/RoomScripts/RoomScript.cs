@@ -4,25 +4,42 @@ using UnityEngine;
 
 public class RoomScript : MonoBehaviour
 {
-    [SerializeField] protected GameObject owningShip;
-    [SerializeField] protected int id;
-    [SerializeField] protected int max_hp;
-    protected float hp;
-    protected GameObject[] room_health_display;
-    [SerializeField] protected GameObject room_health_bar;
+    [SerializeField] protected GameObject   owningShip;
 
-    // Start is called before the first frame update
+    [SerializeField] protected int          id;
+    [SerializeField] protected int          max_hp;
+                     protected float        hp;
+
+                     protected GameObject[] room_health_display;
+    [SerializeField] protected GameObject   room_health_bar;
+
+    //
+    //  Assigned power to this room.
+    //
+    [SerializeField] protected int          assigned_power;
+
+    //
+    //  Start is called before
+    //  the first frame update.
+    //
     void Start()
     {
 
     }
 
-    // Update is called once per frame
+    //
+    //  Update is called
+    //  once per frame.
+    //
     void Update()
     {
 
     }
 
+    //
+    //  Initializes the room and
+    //  places it "onto" the parent ship.
+    //
     protected void initRoom()
     {
         owningShip.GetComponent<ShipScript>().addRoomToShip(this.gameObject);
@@ -38,13 +55,23 @@ public class RoomScript : MonoBehaviour
         return id;
     }
 
-    //renders in place the health bars on the top right of the room
+    public float getHp()
+    {
+        return hp;
+    }
+
+    //
+    //  Renders in place the health bars
+    //  on the top right of the room.
+    //
     protected void RenderHealthBars()
     {
         float width = gameObject.GetComponent<SpriteRenderer>().sprite.rect.width;
         float height = gameObject.GetComponent<SpriteRenderer>().sprite.rect.height;
+
         width /= 50;
         height /= 50;
+
         for(int i = 0; i < max_hp; i++) {
             GameObject bar = GameObject.Instantiate(room_health_bar, gameObject.transform, false);
             bar.transform.position = new Vector2(bar.transform.position.x + width - (.15f * (1 + i)), bar.transform.position.y + height - .22f);
@@ -59,8 +86,19 @@ public class RoomScript : MonoBehaviour
         float overflow;
         if (hp < 0)
         {
-            overflow = hp; //save the dip into the negatives. We need this to assign hull damage
-            hp = 0; //ensure that hp does not dip into negatives, otherwise bugs will occur
+            //
+            //  Save the "dip" into the negatives;
+            //  we need this to assign hull damage.
+            //
+            overflow = hp;
+
+            //
+            //  Ensure that HP does not dip
+            //  into negatives, otherwise
+            //  bugs will occur.
+            //
+            hp = 0;
+
             owningShip.GetComponent<ShipScript>().TakeHullDamage(overflow);
         }
         int hp_floor = Mathf.FloorToInt(hp);
@@ -68,6 +106,16 @@ public class RoomScript : MonoBehaviour
         {
             room_health_display[i].GetComponent<SpriteRenderer>().color = Color.red;
         }
+    }
+
+    public void setAssignedPower(int power)
+    {
+        assigned_power = power;
+    }
+
+    public int getAssignedPower()
+    {
+        return assigned_power;
     }
 
     public GameObject getOwningShip()
