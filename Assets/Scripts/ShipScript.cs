@@ -8,6 +8,7 @@ public class ShipScript : MonoBehaviour
 
     [SerializeField] private float      flight_height;
     [SerializeField] private float      flight_width;
+
     [SerializeField] private float      shield_height;
     [SerializeField] private float      shield_width;
     [SerializeField] private GameObject shield_prefab;
@@ -20,6 +21,8 @@ public class ShipScript : MonoBehaviour
                      private float      hp;
     [SerializeField] private GameObject health_bar;
                      private float      dodge;
+
+    [SerializeField] private int        accumulative_power;
 
     private static GameObject[]         ship_list;
     private GameObject[]                room_list;
@@ -83,10 +86,25 @@ public class ShipScript : MonoBehaviour
             if(id == 1)
                 ship_shield.layer = 7;
         }
+
         else if(shield_hp <= 0 && ship_shield != null)
-        {
             GameObject.Destroy(ship_shield);
-        }
+    }
+
+    public void incrementPowerOfRoom(GameObject room)
+    {
+        RoomScript selected = room.GetComponent<RoomScript>();
+
+        //
+        //  A room can only draw power
+        //  proportional to its current HP.
+        //
+        if (
+            Mathf.FloorToInt(selected.getHp()) < ( (selected.getAssignedPower() / 2) + 1 )
+        )
+            return;
+
+        selected.setAssignedPower(selected.getAssignedPower() + 2);
     }
 
     public void registerSelf()
@@ -135,51 +153,75 @@ public class ShipScript : MonoBehaviour
     //
     public void indexRoomUponAddition(GameObject room)
     {
+        //
+        //  If the room doesn't exist,
+        //  well... I don't know what to say.
+        //
         if (room == null)
             return;
 
         if (room.GetComponent<LaserRoomScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED LASER ROOM.");
+            if (lasers == null)
+                lasers = new List<GameObject>();
+
             lasers.Add(room);
         }
+
         else if (room.GetComponent<HangarRoomScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED HANGAR ROOM.");
+            if (hangars == null)
+                hangars = new List<GameObject>();
+
             hangars.Add(room);
         }
+
         else if (room.GetComponent<MissileRoomScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED MISSILE ROOM.");
+            if (missiles == null)
+                missiles = new List<GameObject>();
+
             missiles.Add(room);
         }
+
         else if (room.GetComponent<EngineScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED ENGINE ROOM.");
+            if (engines == null)
+                engines = new List<GameObject>();
+
             engines.Add(room);
         }
+
         else if (room.GetComponent<ShieldScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED SHIELD ROOM.");
+            if (shields == null)
+                shields = new List<GameObject>();
+
             shields.Add(room);
         }
+
         else if (room.GetComponent<ReactorRoomScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED REACTOR ROOM.");
+            if (reactors == null)
+                reactors = new List<GameObject>();
+
             reactors.Add(room);
+
+            accumulative_power += room.GetComponent<ReactorRoomScript>().getCapacity() * 2;
         }
+
         else if (room.GetComponent<PointDefenseScript>() != null)
         {
-            Debug.Log("--> indexRoomUponAddition(): INDEXED POINT DEFENSE ROOM.");
+            if (point_defenses == null)
+                point_defenses = new List<GameObject>();
+
             point_defenses.Add(
                 room
             );
         }
+
         else
-        {
-            Debug.Log("--> indexRoomUponAddition(): !!! UNKNOWN ROOM !!!");
             return;
-        }
     }
 
     public void registerCraft(GameObject craft) {
