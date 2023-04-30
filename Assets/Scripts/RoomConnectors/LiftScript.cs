@@ -16,6 +16,12 @@ public class LiftScript : MonoBehaviour
     protected GameObject[] connectingRooms;
 
     //
+    //  The current room this lift
+    //  is on. (For rendering the sprite)
+    //
+    protected GameObject currentRoom;
+
+    //
     //  Start is called before
     //  the initial frame update.
     //
