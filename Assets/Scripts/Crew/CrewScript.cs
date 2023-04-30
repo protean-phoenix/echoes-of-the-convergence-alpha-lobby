@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CrewMemberType
+public enum CrewType
 {
     Scientist,
     Pilot,
@@ -11,22 +11,21 @@ public enum CrewMemberType
     Gunnery
 }
 
-public class CrewMemberScript : MonoBehaviour
+public class CrewScript : MonoBehaviour
 {
     //
     //  The parent ship this crew
-    //  member has currently boarded.
+    //  has currently boarded.
     //
     [SerializeField] protected GameObject owningShip;
 
     //
-    //  The identifier of this
-    //  crew member.
+    //  The identifier of this crew.
     //
     [SerializeField] protected int id;
 
     //
-    //  This crew member's respective
+    //  This crew's respective
     //  "specialist" points. They go
     //  up to a maximum of 20 pts.
     //
@@ -40,7 +39,7 @@ public class CrewMemberScript : MonoBehaviour
     [SerializeField] protected int ENGPoints;
     [SerializeField] protected int WPNPoints;
 
-    [SerializeField] protected CrewMemberType   crewType;
+    [SerializeField] protected CrewType         crewType;
     [SerializeField] protected GameObject       appointedRoom;
 
     //
@@ -61,7 +60,7 @@ public class CrewMemberScript : MonoBehaviour
 
     }
 
-    public void initCrewMember()
+    public void initCrew()
     {
         SCIPoints = 10;
         PLTPoints = 10;
@@ -70,19 +69,19 @@ public class CrewMemberScript : MonoBehaviour
 
         switch(crewType)
         {
-            case CrewMemberType.Engineer:
+            case CrewType.Engineer:
                 ENGPoints = 20;
                 break;
 
-            case CrewMemberType.Scientist:
+            case CrewType.Scientist:
                 SCIPoints = 20;
                 break;
 
-            case CrewMemberType.Pilot:
+            case CrewType.Pilot:
                 PLTPoints = 20;
                 break;
 
-            case CrewMemberType.Gunnery:
+            case CrewType.Gunnery:
                 WPNPoints = 20;
                 break;
 
@@ -96,7 +95,7 @@ public class CrewMemberScript : MonoBehaviour
 
     //
     //  A path-finding algorithm for
-    //  (re-)locating crew members.
+    //  (re-)locating the crew.
     //
     //  It tries to find the shortest
     //  path to the destination room,
@@ -106,10 +105,10 @@ public class CrewMemberScript : MonoBehaviour
     //
     //  If none of the rooms that provide
     //  a path to the destination don't have a lift,
-    //  and the crew member must move vertically
+    //  and the crew must move vertically
     //  to reach a room, then the destination is unreachable.
     //
-    public void updateCrewMemberLocation()
+    public void updateCrewLocation()
     {
         Vector2 currentPosition = gameObject.transform.position;
         Vector2 wantedLocation  = appointedRoom.transform.position;
@@ -117,7 +116,7 @@ public class CrewMemberScript : MonoBehaviour
 
         //
         //  Instead of placing the crew
-        //  member in the center (X, Y)
+        //  in the center (X, Y)
         //  position of the room, place them
         //  near the bottom (floor in the sprite).
         //

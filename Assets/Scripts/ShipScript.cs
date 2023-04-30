@@ -123,9 +123,9 @@ public class ShipScript : MonoBehaviour
         ship_list[id] = gameObject;
     }
 
-    public void addMemberToShip(GameObject crewMember)
+    public void addCrewToShip(GameObject crew)
     {
-        int local_id = crewMember.GetComponent<CrewMemberScript>().getId();
+        int local_id = crew.GetComponent<CrewScript>().getId();
 
         if (crew_list == null)
             crew_list = new GameObject[1];
@@ -139,7 +139,7 @@ public class ShipScript : MonoBehaviour
             crew_list = extended_list;
         }
 
-        crew_list[local_id] = crewMember;
+        crew_list[local_id] = crew;
     }
 
     public void addRoomToShip(GameObject room)
@@ -338,7 +338,7 @@ public class ShipScript : MonoBehaviour
         return crew_list;
     }
 
-    public GameObject getCrewMemberById(int id)
+    public GameObject getCrewById(int id)
     {
         return crew_list[id];
     }

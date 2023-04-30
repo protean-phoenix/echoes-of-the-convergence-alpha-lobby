@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2974407884483659199}
   - component: {fileID: 3143363018030199693}
   m_Layer: 0
-  m_Name: CrewMemberScientist
+  m_Name: CrewScientist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

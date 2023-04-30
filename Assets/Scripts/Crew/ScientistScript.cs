@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScientistScript : CrewMemberScript
+public class ScientistScript : CrewScript
 {
     //
     //  Start is called before
@@ -10,9 +10,9 @@ public class ScientistScript : CrewMemberScript
     //
     void Start()
     {
-        crewType = CrewMemberType.Scientist;
+        crewType = CrewType.Scientist;
 
-        initCrewMember();
+        initCrew();
     }
 
     //
@@ -34,6 +34,6 @@ public class ScientistScript : CrewMemberScript
         }
 
         if (appointedRoom != null && !isInAssignedRoom())
-            updateCrewMemberLocation();
+            updateCrewLocation();
     }
 }
