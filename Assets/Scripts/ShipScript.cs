@@ -38,6 +38,8 @@ public class ShipScript : MonoBehaviour
     protected List<GameObject>          point_defenses;
     protected List<GameObject>          shields;
 
+    protected List<GameObject>          lifts;
+
     //
     //  Start is called before
     //  the first frame update.
@@ -66,6 +68,8 @@ public class ShipScript : MonoBehaviour
         engines         = new List<GameObject>();
         point_defenses  = new List<GameObject>();
         shields         = new List<GameObject>();
+
+        lifts = new List<GameObject>();
     }
 
     //
@@ -92,7 +96,7 @@ public class ShipScript : MonoBehaviour
             GameObject.Destroy(ship_shield);
     }
 
-    public void incrementPowerOfRoom(GameObject room)
+    public void changePowerOfRoom(GameObject room, bool subtract)
     {
         RoomScript selected = room.GetComponent<RoomScript>();
 
@@ -105,7 +109,12 @@ public class ShipScript : MonoBehaviour
         )
             return;
 
-        selected.setAssignedPower(selected.getAssignedPower() + 2);
+        int delta = 2;
+
+        if (subtract)
+            delta *= -1;
+
+        selected.setAssignedPower(selected.getAssignedPower() + delta);
     }
 
     public void registerSelf()
@@ -159,6 +168,14 @@ public class ShipScript : MonoBehaviour
         room_list[local_id] = room;
 
         indexRoomUponAddition(room);
+    }
+
+    public void addLiftToShip(GameObject lift)
+    {
+        if (lifts == null)
+            lifts = new List<GameObject>();
+
+        lifts.Add(lift);
     }
 
     //
@@ -353,6 +370,16 @@ public class ShipScript : MonoBehaviour
         return room_list[id];
     }
 
+    public GameObject[] getLiftList()
+    {
+        return lifts.ToArray();
+    }
+
+    public GameObject getLiftById(int id)
+    {
+        return lifts.Find(l => l.GetComponent<LiftScript>().getId() == id);
+    }
+
     public float getFlightHeight()
     {
         return flight_height;
@@ -393,8 +420,10 @@ public class ShipScript : MonoBehaviour
         return point_defenses;
     }
 
-    public List<GameObject> geShieldsList()
+    public List<GameObject> getShieldsList()
     {
         return shields;
     }
+
+
 }
