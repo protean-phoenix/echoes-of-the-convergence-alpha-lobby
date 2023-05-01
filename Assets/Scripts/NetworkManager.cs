@@ -92,7 +92,7 @@ public class NetworkManager : MonoBehaviour
 
     async void getPrimedLobby()
     {
-        var response = await client.GetAsync("get-primed");
+        var response = await client.GetAsync("matchmaking/get-primed");
         String data = await response.Content.ReadAsStringAsync();
         Debug.Log(data);
         lobby = JsonConvert.DeserializeObject<Lobby>(data);
