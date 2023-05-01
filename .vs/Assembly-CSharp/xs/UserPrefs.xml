@@ -1,0 +1,38 @@
+﻿<Properties StartupConfiguration="{5B7B909C-5CEB-BCA6-1319-9578B6ACE15F}|">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workspace />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RoomConnectors/LiftScript.cs">
+    <Files>
+      <File FileName="Assets/Scripts/RoomConnectors/CorridorScript.cs" />
+      <File FileName="Assets/Scripts/ShipScript.cs" Line="24" Column="1" />
+      <File FileName="Assets/Scripts/RoomScripts/ReactorRoomScript.cs" />
+      <File FileName="Assets/Scripts/RoomScripts/RoomScript.cs" Line="167" Column="21" />
+      <File FileName="Assets/Scripts/RoomConnectors/LiftScript.cs" Line="268" Column="55" />
+      <File FileName="Assets/Scripts/Crew/CrewScript.cs" Line="51" Column="1" />
+      <File FileName="Assets/Scripts/Utils.cs" Line="63" Column="6" />
+      <File FileName="Assets/Scripts/Crew/ScientistScript.cs" Line="40" Column="35" />
+      <File FileName="Assets/Scripts/RoomConnectors/NewFile.txt" Line="61" Column="26" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Assembly-CSharp" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="Crew" expanded="True" />
+                <Node name="Projectiles" expanded="True" />
+                <Node name="RoomConnectors" expanded="True" />
+                <Node name="RoomScripts" expanded="True" />
+              </Node>
+            </Node>
+            <Node name="Packages" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+</Properties>
