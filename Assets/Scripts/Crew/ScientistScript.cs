@@ -33,7 +33,25 @@ public class ScientistScript : CrewScript
                 assignRoom(available_reactors[0]);
         }
 
-        if (appointedRoom != null && !isInAssignedRoom())
-            updateCrewLocation();
+        if (currentRoom == null)
+            findCurrentRoom();
+
+        if (
+            currentRoom != null &&
+            currentRoom != appointedRoom &&
+            currentRoom.GetComponent<LiftScript>() == null
+        )
+        {
+            LiftScript currentLift = currentRoom
+                                        .GetComponent<RoomScript>()
+                                        .getLift()
+                                        .GetComponent<LiftScript>();
+
+            if (currentLift != null)
+                currentLift.callElevator(gameObject);
+        }
+
+        if (roomsToTraverse.Count > 0 && !isInRoom(roomsToTraverse[0]))
+            updateCrewLocation(roomsToTraverse[0]);
     }
 }
