@@ -1,4 +1,8 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+
 public enum TestingStatus
 {
     TEST,
@@ -48,5 +52,22 @@ public class Utils : MonoBehaviour
         float h = Mathf.Pow(((a - b) / (a + b)), 2);
         float p = Mathf.PI * (a + b) * (1 + (3 * h / (10 + Mathf.Sqrt(4 - 3 * h))));
         return p;
+    }
+
+    public static float getAbsoluteDifference(float a, float b)
+    {
+        return Math.Abs(Math.Abs(a) - Math.Abs(b));
+    }
+
+    public static float getDistance(float a, float b)
+    {
+        if (a > 0 && b < 0)
+            return a - b;
+
+        else if (a < 0 && b > 0)
+            return b - a;
+
+        else
+            return getAbsoluteDifference(a, b);
     }
 }
