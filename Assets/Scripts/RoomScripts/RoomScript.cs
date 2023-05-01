@@ -14,6 +14,16 @@ public class RoomScript : MonoBehaviour
     [SerializeField] protected GameObject   room_health_bar;
 
     //
+    //  The crew that are in this room.
+    //
+    [SerializeField] protected GameObject[] crewList;
+
+    //
+    //  The lift attached to this room.
+    //
+    [SerializeField] protected GameObject   lift;
+
+    //
     //  Assigned power to this room.
     //
     [SerializeField] protected int          assigned_power;
@@ -59,6 +69,27 @@ public class RoomScript : MonoBehaviour
     public float getHp()
     {
         return hp;
+    }
+
+    public GameObject[] getCrewList()
+    {
+        return crewList;
+    }
+
+    public void addCrew(GameObject crew)
+    {
+        List<GameObject> temporary = new List<GameObject>(crewList);
+
+        temporary.Add(crew);
+
+        crewList = temporary.ToArray(); 
+    }
+
+    public void removeCrewById(int id)
+    {
+        List<GameObject> temporary = new List<GameObject>(crewList);
+
+        crewList = temporary.FindAll(c => c.GetComponent<CrewScript>().getId() != id).ToArray();
     }
 
     //
@@ -129,5 +160,15 @@ public class RoomScript : MonoBehaviour
     public GameObject getOwningShip()
     {
         return owningShip;
+    }
+
+    public GameObject getLift()
+    {
+        return lift;
+    }
+
+    public void attachLift(GameObject newLift)
+    {
+        lift = newLift;
     }
 }
