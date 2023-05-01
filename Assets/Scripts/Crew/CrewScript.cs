@@ -39,8 +39,22 @@ public class CrewScript : MonoBehaviour
     [SerializeField] protected int ENGPoints;
     [SerializeField] protected int WPNPoints;
 
+    //
+    //  The factor at which this
+    //  crew repairs a damaged room.
+    //
+    [SerializeField] protected int repairStat;
+
+    [SerializeField] protected GameObject       currentRoom;
     [SerializeField] protected CrewType         crewType;
     [SerializeField] protected GameObject       appointedRoom;
+
+    //
+    //  The rooms this crewmate
+    //  must traverse in order to
+    //  reach their location.
+    //
+    [SerializeField] protected List<GameObject> roomsToTraverse;
 
     //
     //  Start is called before
@@ -94,6 +108,28 @@ public class CrewScript : MonoBehaviour
     }
 
     //
+    //  Locates which room this
+    //  crew is currently in.
+    //
+    public void findCurrentRoom()
+    {
+        foreach (GameObject room in owningShip.GetComponent<ShipScript>().getRoomList())
+        {
+            if (room.GetComponent<SpriteRenderer>().bounds.Contains(gameObject.GetComponent<SpriteRenderer>().transform.position))
+            {
+                room.GetComponent<RoomScript>().addCrew(gameObject);
+
+                currentRoom = room;
+            }
+        }
+    }
+
+    public void boardLift(GameObject lift)
+    {
+        roomsToTraverse.Add(lift);
+    }
+
+    //
     //  A path-finding algorithm for
     //  (re-)locating the crew.
     //
@@ -108,11 +144,11 @@ public class CrewScript : MonoBehaviour
     //  and the crew must move vertically
     //  to reach a room, then the destination is unreachable.
     //
-    public void updateCrewLocation()
+    public void updateCrewLocation(GameObject nextLocation)
     {
         Vector2 currentPosition = gameObject.transform.position;
-        Vector2 wantedLocation  = appointedRoom.transform.position;
-        float   locationHeight  = appointedRoom.GetComponent<SpriteRenderer>().sprite.rect.height;
+        Vector2 wantedLocation  = nextLocation.transform.position;
+        float   locationHeight  = nextLocation.GetComponent<SpriteRenderer>().sprite.rect.height;
 
         //
         //  Instead of placing the crew
@@ -120,9 +156,9 @@ public class CrewScript : MonoBehaviour
         //  position of the room, place them
         //  near the bottom (floor in the sprite).
         //
-        wantedLocation = new Vector2(
+        wantedLocation = new Vector2 (
             wantedLocation.x,
-            wantedLocation.y - (float)Math.Round(locationHeight / 76, 3)
+            wantedLocation.y - (float)Math.Round(locationHeight / 99.9, 3)
         );
 
         //
@@ -136,42 +172,47 @@ public class CrewScript : MonoBehaviour
         //
         //          Unknown why it's exponential growth.
         //
-        if (!appointedRoom.transform.position.Equals(gameObject.transform.position))
+        if (Utils.getDistance(currentPosition.x, wantedLocation.x) > 0.01f)
         {
-            if (!Mathf.Approximately(currentPosition.y, wantedLocation.y) || !Mathf.Approximately(currentPosition.x, wantedLocation.x))
-            {
-                currentPosition = gameObject.transform.position;
+            currentPosition = gameObject.transform.position;
 
-                float delta = 0.0f;
+            float delta = 0.002f;
 
-                if (Math.Abs(currentPosition.y - wantedLocation.y) > 0.01f)
-                {
-                    if (wantedLocation.y > currentPosition.y)
-                        delta += Math.Abs(wantedLocation.y) / 500f;
+            //if (Math.Abs(currentPosition.y - wantedLocation.y) > 0.01f)
+            //{
+            //    if (wantedLocation.y > currentPosition.y)
+            //        delta += Math.Abs(wantedLocation.y) / 500f;
 
-                    else
-                        delta -= Math.Abs(wantedLocation.y) / 500f;
+            //    else
+            //        delta -= Math.Abs(wantedLocation.y) / 500f;
 
-                    gameObject.transform.position = new Vector2(currentPosition.x, (float)Math.Round(currentPosition.y + delta, 3));
-                }
+            //    gameObject.transform.position = new Vector2(currentPosition.x, (float)Math.Round(currentPosition.y + delta, 3));
+            //}
 
-                else if (Math.Abs(currentPosition.x - wantedLocation.x) > 0.01f)
-                {
-                    if (wantedLocation.x > currentPosition.x)
-                        delta += Math.Abs(wantedLocation.x) / 500f;
+                //if (Utils.getDistance(wantedLocation.x, currentPosition.x) < 0.2f)
+                //    delta = Utils.getAbsoluteDifference(wantedLocation.x, currentPosition.x);
 
-                    else
-                        delta -= Math.Abs(wantedLocation.x) / 500f;
+            if (wantedLocation.x < currentPosition.x)
+                delta *= -1f;
 
-                    gameObject.transform.position = new Vector2((float)Math.Round(currentPosition.x + delta, 3), currentPosition.y);
-                }
-            }
+            gameObject.transform.position = new Vector2((float)Math.Round(currentPosition.x + delta, 3), currentPosition.y);
+        }
+
+        else
+        {
+            roomsToTraverse.Remove(nextLocation);
+            currentRoom = nextLocation;
         }
     }
 
-    public bool isInAssignedRoom()
+    public List<GameObject> findPathToTargetRoom(GameObject targetRoom)
     {
-        Vector2 currentLocation  = gameObject.transform.position;
+        return new List<GameObject>();
+    }
+
+    public bool isInRoom(GameObject room)
+    {
+        Vector2 currentLocation  = room.transform.position;
         Vector2 assignedLocation = appointedRoom.transform.position;
         float locationHeight     = appointedRoom.GetComponent<SpriteRenderer>().sprite.rect.height;
 
@@ -182,13 +223,10 @@ public class CrewScript : MonoBehaviour
         //
         assignedLocation = new Vector2 (
             assignedLocation.x,
-            assignedLocation.y - (float)Math.Round(locationHeight / 76, 3)
+            assignedLocation.y - (float)Math.Round(locationHeight / 99.9, 3)
         );
 
-        return (
-            (Math.Abs(currentLocation.x - assignedLocation.x) < 0.01f) &&
-            (Math.Abs(currentLocation.y - assignedLocation.y) < 0.01f)
-        );
+        return (Math.Abs(currentLocation.x - assignedLocation.x) < 0.01f);
     }
 
     public void assignRoom(GameObject room)
@@ -203,10 +241,22 @@ public class CrewScript : MonoBehaviour
             return;
 
         appointedRoom = room;
+
+        room.GetComponent<RoomScript>().addCrew(gameObject);
     }
 
     public int getId()
     {
         return id;
+    }
+
+    public GameObject getCurrentRoom()
+    {
+        return currentRoom;
+    }
+
+    public GameObject getAppointedRoom()
+    {
+        return appointedRoom;
     }
 }
